@@ -7,7 +7,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import ShareIcon from '@mui/icons-material/Share';
 import AddIcon from '@mui/icons-material/Add';
 
-const Toolbar = () => {
+const Toolbar = ({ onOpenCreateTask }) => {
     return (
         <Container sx={{ mt: 2 }}>
             <Box
@@ -33,28 +33,6 @@ const Toolbar = () => {
                     sx={{ marginRight: 2 }}
                 />
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Button endIcon={<FilterListIcon />} variant="outlined" sx={{
-                        marginRight: 2,
-                        color: '#6f6e6e',
-                        border: 'none',
-                        '&:hover': {
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                        },
-                    }}>
-                        Filter
-                    </Button>
-                    <Button endIcon={<ShareIcon />} variant="outlined" sx={{
-                        marginRight: 2,
-                        color: '#6f6e6e',
-                        border: 'none',
-                        '&:hover': {
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                        },
-                    }}>
-                        Share
-                    </Button>
                     <Button endIcon={<CalendarTodayIcon />} variant="outlined" sx={{
                         marginRight: 2,
                         color: '#6f6e6e',
@@ -77,7 +55,32 @@ const Toolbar = () => {
                     }}>
                         Automation
                     </Button>
-                    <Button variant="contained" color="primary" endIcon={<AddIcon />}>
+                    
+                    <Button endIcon={<FilterListIcon />} variant="outlined" sx={{
+                        marginRight: 2,
+                        color: '#6f6e6e',
+                        border: 'none',
+                        '&:hover': {
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                        },
+                    }}>
+                        Filter
+                    </Button>
+
+                    <Button endIcon={<ShareIcon />} variant="outlined" sx={{
+                        marginRight: 2,
+                        color: '#6f6e6e',
+                        border: 'none',
+                        '&:hover': {
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                        },
+                    }}>
+                        Share
+                    </Button>
+
+                    <Button variant="contained" color="primary" endIcon={<AddIcon />} onClick={onOpenCreateTask}>
                         Create new
                     </Button>
                 </Box>

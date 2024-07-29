@@ -1,11 +1,12 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemText, ListItemIcon, IconButton, Button, Avatar, Typography, Divider } from '@mui/material';
+import { Drawer, Box, List, ListItem, ListItemText, ListItemIcon, IconButton, Button, Avatar, Typography, Divider } from '@mui/material';
 import { Home, Dashboard, Settings, Group, BarChart, Add, Notifications } from '@mui/icons-material';
 import { styled } from '@mui/system';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import SouthIcon from '@mui/icons-material/South';
 
 const drawerWidth = 240;
 
@@ -94,9 +95,11 @@ const Sidebar = ({ handleOpenCreateTask }) => {
           Create new task
         </Button>
       </div>
-      <BottomSection>
-        <Button variant="outlined">Download the app</Button>
-      </BottomSection>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
+        <Button variant="outlined" startIcon={<SouthIcon sx={{ color: 'primary.main', fontSize: 20 }} />}>
+          Download the app
+        </Button>
+      </Box>
     </DrawerStyled>
   );
 };

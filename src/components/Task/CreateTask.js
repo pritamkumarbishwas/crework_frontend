@@ -1,73 +1,88 @@
 import React, { useState } from 'react';
-import { Box, Typography, TextField, MenuItem, Select, FormControl, InputLabel, Button } from '@mui/material';
+import { Box, TextField, MenuItem, Select, FormControl, InputLabel, Button, Alert } from '@mui/material';
+import { useTaskContext } from '../../context/TaskContext';
+import { useSnackbar } from '../../context/SnackbarContext';
 
 const CreateTask = ({ onClose }) => {
+    const { createTask } = useTaskContext();
     const [title, setTitle] = useState('');
     const [status, setStatus] = useState('');
     const [priority, setPriority] = useState('');
     const [deadline, setDeadline] = useState('');
     const [description, setDescription] = useState('');
+    const [errors, setErrors] = useState({});
+    const { showSnackbar } = useSnackbar();
 
-    const handleTitleChange = (event) => {
-        setTitle(event.target.value);
+    const validateFields = () => {
+        let fieldErrors = {};
+        if (!title) fieldErrors.title = 'Title is required';
+        if (!status) fieldErrors.status = 'Status is required';
+        return fieldErrors;
     };
 
-    const handleStatusChange = (event) => {
-        setStatus(event.target.value);
-    };
+    const handleSubmit = async () => {
+        const fieldErrors = validateFields();
+        if (Object.keys(fieldErrors).length > 0) {
+            setErrors(fieldErrors);
+            return;
+        }
 
-    const handlePriorityChange = (event) => {
-        setPriority(event.target.value);
-    };
+        const task = { title, status, priority, deadline, description };
 
-    const handleDeadlineChange = (event) => {
-        setDeadline(event.target.value);
-    };
+        try {
+            const result = await createTask(task);
 
-    const handleDescriptionChange = (event) => {
-        setDescription(event.target.value);
-    };
 
-    const handleSubmit = () => {
-        // Handle form submission logic
-        onClose();  // Close the modal when the form is submitted
+            if (result.success) {
+                showSnackbar('Task Added successful!', 'success');
+                // Redirect or perform other actions
+                onClose();
+            } else {
+                showSnackbar(result.message, 'error');
+                onClose();
+            }
+        } catch (err) {
+            setErrors({ submit: 'Failed to create task' });
+        }
     };
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', mt: 1 }}>
+            {errors.submit && <Alert severity="error">{errors.submit}</Alert>}
             <TextField
                 margin="normal"
                 fullWidth
                 id="title"
                 label="Title"
                 name="title"
-                autoComplete="name"
-                autoFocus
                 value={title}
-                onChange={handleTitleChange}
+                onChange={(e) => setTitle(e.target.value)}
+                error={!!errors.title}
+                helperText={errors.title}
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" error={!!errors.status}>
                 <InputLabel id="status-label">Status</InputLabel>
                 <Select
                     labelId="status-label"
                     value={status}
-                    onChange={handleStatusChange}
+                    onChange={(e) => setStatus(e.target.value)}
                 >
-                    <MenuItem value="Not started">Not started</MenuItem>
-                    <MenuItem value="In progress">In progress</MenuItem>
-                    <MenuItem value="Completed">Completed</MenuItem>
+                    <MenuItem value="To Do">To Do</MenuItem>
+                    <MenuItem value="In Progress">In Progress</MenuItem>
+                    <MenuItem value="Done">Done</MenuItem>
                 </Select>
+                {errors.status && <Alert severity="error">{errors.status}</Alert>}
             </FormControl>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" error={!!errors.priority}>
                 <InputLabel id="priority-label">Priority</InputLabel>
                 <Select
                     labelId="priority-label"
                     value={priority}
-                    onChange={handlePriorityChange}
+                    onChange={(e) => setPriority(e.target.value)}
                 >
                     <MenuItem value="Low">Low</MenuItem>
                     <MenuItem value="Medium">Medium</MenuItem>
-                    <MenuItem value="High">High</MenuItem>
+                    <MenuItem value="Urgent">Urgent</MenuItem>
                 </Select>
             </FormControl>
             <TextField
@@ -80,7 +95,8 @@ const CreateTask = ({ onClose }) => {
                     shrink: true,
                 }}
                 value={deadline}
-                onChange={handleDeadlineChange}
+                onChange={(e) => setDeadline(e.target.value)}
+                error={!!errors.deadline}
             />
             <TextField
                 fullWidth
@@ -90,7 +106,8 @@ const CreateTask = ({ onClose }) => {
                 multiline
                 rows={4}
                 value={description}
-                onChange={handleDescriptionChange}
+                onChange={(e) => setDescription(e.target.value)}
+                error={!!errors.description}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                 <Button variant="contained" color="primary" onClick={handleSubmit}>

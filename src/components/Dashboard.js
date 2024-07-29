@@ -18,8 +18,31 @@ const Dashboard = () => {
 
   return (<>
     <FeatureCard />
-    <Toolbar />
-    <Board />
+    <Toolbar  onOpenCreateTask={handleOpenCreateTask}/>
+    <Board/>
+    <Container>
+     
+      <Dialog
+        open={openCreateTask}
+        onClose={handleDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Create Task
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseCreateTask}
+            sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <CreateTask onClose={handleCloseCreateTask} />
+        </DialogContent>
+      </Dialog>
+    </Container>
   </>
   );
 };

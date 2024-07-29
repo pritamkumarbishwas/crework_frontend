@@ -10,8 +10,9 @@ export function AuthProvider({ children }) {
     const login = async (email, password) => {
         try {
             const response = await axios.post('/api/v1/users/login', { email, password });
-            const { token, user } = response.data;
-            sessionStorage.setItem('authToken', token);
+            const { accessToken, user } = response.data.data;
+            console.log("token",accessToken);
+            sessionStorage.setItem('authToken', accessToken);
             setUser(user);
             setIsAuthenticated(true);
             return { success: true }; // Indicate success

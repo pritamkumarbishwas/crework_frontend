@@ -8,6 +8,7 @@ import MainLayout from './components/MainLayout';
 import Dashboard from './components/Dashboard';
 import { AuthProvider } from './context/AuthContext';
 import { SnackbarProvider } from './context/SnackbarContext'; 
+import { TaskProvider } from './context/TaskContext';  
 
 const theme = createTheme({
   palette: {
@@ -36,15 +37,17 @@ function App() {
       <CssBaseline />
       <SnackbarProvider>
         <AuthProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/" element={<MainLayout handleOpenCreateTask={handleOpenCreateTask} />}>
-                <Route path="dashboard" element={<Dashboard openCreateTask={openCreateTask} handleCloseCreateTask={handleCloseCreateTask} />} />
-              </Route>
-            </Routes>
-          </Router>
+          <TaskProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/" element={<MainLayout handleOpenCreateTask={handleOpenCreateTask} />}>
+                  <Route path="dashboard" element={<Dashboard openCreateTask={openCreateTask} handleCloseCreateTask={handleCloseCreateTask} />} />
+                </Route>
+              </Routes>
+            </Router>
+          </TaskProvider>
         </AuthProvider>
       </SnackbarProvider>
     </ThemeProvider>
