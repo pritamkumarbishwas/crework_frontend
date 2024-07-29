@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/system';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import Footer from './Footer';
+import Sidebar from './Common/Sidebar';
 
 const MainContainer = styled('div')({
   display: 'flex',
@@ -11,19 +9,29 @@ const MainContainer = styled('div')({
 
 const Content = styled('main')(({ theme }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
-  marginTop: theme.spacing(8), 
+  padding: theme.spacing(1),
+  marginTop: theme.spacing(2),
 }));
 
-const MainLayout = () => (
-  <MainContainer>
-    <Header />
-    <Sidebar />
-    <Content>
-      <Outlet />
-      <Footer />
-    </Content>
-  </MainContainer>
-);
+const MainLayout = () => {
+  const [openCreateTask, setOpenCreateTask] = useState(false);
+
+  const handleOpenCreateTask = () => {
+    setOpenCreateTask(true);
+  };
+
+  const handleCloseCreateTask = () => {
+    setOpenCreateTask(false);
+  };
+
+  return (
+    <MainContainer>
+      <Sidebar handleOpenCreateTask={handleOpenCreateTask} />
+      <Content>
+        <Outlet context={{ openCreateTask, handleOpenCreateTask, handleCloseCreateTask }} />
+      </Content>
+    </MainContainer>
+  );
+};
 
 export default MainLayout;

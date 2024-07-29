@@ -1,37 +1,27 @@
 import React from 'react';
-import { Container, Box, Grid, Paper, Typography, Button } from '@mui/material';
+import { Container, Box, Grid, Paper, Typography, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { useOutletContext } from 'react-router-dom';
+import CreateTask from './Task/CreateTask';
+import CloseIcon from '@mui/icons-material/Close';
+import FeatureCard from './Common/FeatureCard';
+import Toolbar from './Common/Toolbar';
+import Board from './Board';
 
-const Dashboard = () => (
-  <Container>
-    <Box sx={{ my: 4 }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6} lg={3}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">To Do</Typography>
-            <Button variant="contained">Add new</Button>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6} lg={3}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">In Progress</Typography>
-            <Button variant="contained">Add new</Button>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6} lg={3}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">Under Review</Typography>
-            <Button variant="contained">Add new</Button>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6} lg={3}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">Finished</Typography>
-            <Button variant="contained">Add new</Button>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
-  </Container>
-);
+const Dashboard = () => {
+  const { openCreateTask, handleOpenCreateTask, handleCloseCreateTask } = useOutletContext();
+
+  const handleDialogClose = (event, reason) => {
+    if (reason !== 'backdropClick') {
+      handleCloseCreateTask();
+    }
+  };
+
+  return (<>
+    <FeatureCard />
+    <Toolbar />
+    <Board />
+  </>
+  );
+};
 
 export default Dashboard;
