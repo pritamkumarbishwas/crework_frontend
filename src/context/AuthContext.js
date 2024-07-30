@@ -3,13 +3,15 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
+const apiUrl = 'https://crework-backend-gvsa.onrender.com';
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('/api/v1/users/login', { email, password });
+            const response = await axios.post(`${apiUrl}/api/v1/users/login`, { email, password });
             const { accessToken, user } = response.data.data;
             // console.log("token",user);
             sessionStorage.setItem('authToken', accessToken);
@@ -25,7 +27,7 @@ export function AuthProvider({ children }) {
 
     const register = async (email, username, password) => {
         try {
-            await axios.post('/api/v1/users/register', { email, username, password });
+            await axios.post(`${apiUrl}/api/v1/users/register`, { email, username, password });
             return { success: true }; // Indicate success
         } catch (error) {
             const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
@@ -38,7 +40,7 @@ export function AuthProvider({ children }) {
             const token = sessionStorage.getItem('authToken');
             if (!token) throw new Error('No token found');
 
-            await axios.post('/api/v1/users/logout', {}, {
+            await axios.post(`${apiUrl}/api/v1/users/logout`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
