@@ -16,7 +16,7 @@ export function TaskProvider({ children }) {
     const fetchTasks = async () => {
         try {
             const token = getAuthToken();
-            const response = await axios.get(apiUrl, {
+            const response = await axios.get('/api/v1/task', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -35,7 +35,7 @@ export function TaskProvider({ children }) {
                 console.error('No authentication token found');
                 return;
             }
-            const response = await axios.post(apiUrl, task, {
+            const response = await axios.post('/api/v1/task', task, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -51,7 +51,7 @@ export function TaskProvider({ children }) {
     const updateTask = async (taskId, updatedTask) => {
         try {
             const token = getAuthToken();
-            const response = await axios.put(`${apiUrl}/${taskId}`, updatedTask, {
+            const response = await axios.put(`/api/v1/task/${taskId}`, updatedTask, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -67,7 +67,7 @@ export function TaskProvider({ children }) {
     const changeStatusTask = async (taskId, status) => {
         try {
             const token = getAuthToken(); // Ensure this function retrieves the correct auth token
-            const response = await axios.put(`${apiUrl}/change-status/${taskId}`, { status }, {
+            const response = await axios.put(`/api/v1/task/change-status/${taskId}`, { status }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -84,7 +84,7 @@ export function TaskProvider({ children }) {
     const deleteTask = async (taskId) => {
         try {
             const token = getAuthToken();
-            await axios.delete(`${apiUrl}/${taskId}`, {
+            await axios.delete(`/api/v1/task/${taskId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -98,7 +98,7 @@ export function TaskProvider({ children }) {
     const getTaskById = async (taskId) => {
         try {
             const token = getAuthToken();
-            const response = await axios.get(`${apiUrl}/${taskId}`, {
+            const response = await axios.get(`/api/v1/task/${taskId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
