@@ -1,25 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, TextField, MenuItem, Select, FormControl, InputLabel, Button, Alert } from '@mui/material';
-import { useTaskContext } from '../../context/TaskContext';
-import { useSnackbar } from '../../context/SnackbarContext';
+// import { useTaskContext } from '../../context/TaskContext';
+// import { useSnackbar } from '../../context/SnackbarContext';
 
-const CreateTask = ({ onClose, status: initialStatus }) => {
-    const { createTask } = useTaskContext();
+const EditTask = ({ onClose }) => {
+    // const { createTask } = useTaskContext();
     const [title, setTitle] = useState('');
     const [status, setStatus] = useState('');
     const [priority, setPriority] = useState('');
     const [deadline, setDeadline] = useState('');
     const [description, setDescription] = useState('');
     const [errors, setErrors] = useState({});
-    const { showSnackbar } = useSnackbar();
-
-    // Update status state when initialStatus prop changes
-    useEffect(() => {
-        if (initialStatus) {
-            // Set status to 'Done' if initialStatus is 'Finished'
-            setStatus(initialStatus === 'Finished' ? 'Done' : initialStatus);
-        }
-    }, [initialStatus]);
+    // const { showSnackbar } = useSnackbar();
 
     const validateFields = () => {
         let fieldErrors = {};
@@ -37,19 +29,21 @@ const CreateTask = ({ onClose, status: initialStatus }) => {
 
         const task = { title, status, priority, deadline, description };
 
-        try {
-            const result = await createTask(task);
+        // try {
+        //     const result = await createTask(task);
 
-            if (result.success) {
-                showSnackbar('Task Added successfully!', 'success');
-                onClose();
-            } else {
-                showSnackbar(result.message, 'error');
-                onClose();
-            }
-        } catch (err) {
-            setErrors({ submit: 'Failed to create task' });
-        }
+
+        //     if (result.success) {
+        //         showSnackbar('Task Added successful!', 'success');
+        //         // Redirect or perform other actions
+        //         onClose();
+        //     } else {
+        //         showSnackbar(result.message, 'error');
+        //         onClose();
+        //     }
+        // } catch (err) {
+        //     setErrors({ submit: 'Failed to create task' });
+        // }
     };
 
     return (
@@ -75,12 +69,11 @@ const CreateTask = ({ onClose, status: initialStatus }) => {
                 >
                     <MenuItem value="To Do">To Do</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
-                    <MenuItem value="Under Review">Under Review</MenuItem>
                     <MenuItem value="Done">Done</MenuItem>
                 </Select>
                 {errors.status && <Alert severity="error">{errors.status}</Alert>}
             </FormControl>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" error={!!errors.priority}>
                 <InputLabel id="priority-label">Priority</InputLabel>
                 <Select
                     labelId="priority-label"
@@ -125,4 +118,4 @@ const CreateTask = ({ onClose, status: initialStatus }) => {
     );
 };
 
-export default CreateTask;
+export default EditTask;

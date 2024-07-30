@@ -6,9 +6,10 @@ import Login from './components/Authentication/Login';
 import Register from './components/Authentication/Register';
 import MainLayout from './components/MainLayout';
 import Dashboard from './components/Dashboard';
+import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
 import { AuthProvider } from './context/AuthContext';
-import { SnackbarProvider } from './context/SnackbarContext'; 
-import { TaskProvider } from './context/TaskContext';  
+import { SnackbarProvider } from './context/SnackbarContext';
+import { TaskProvider } from './context/TaskContext';
 
 const theme = createTheme({
   palette: {
@@ -42,7 +43,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/" element={<MainLayout handleOpenCreateTask={handleOpenCreateTask} />}>
+                <Route path="/" element={<PrivateRoute element={<MainLayout handleOpenCreateTask={handleOpenCreateTask} />} />}>
                   <Route path="dashboard" element={<Dashboard openCreateTask={openCreateTask} handleCloseCreateTask={handleCloseCreateTask} />} />
                 </Route>
               </Routes>

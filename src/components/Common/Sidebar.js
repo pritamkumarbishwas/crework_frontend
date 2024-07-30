@@ -49,12 +49,15 @@ const Sidebar = ({ handleOpenCreateTask }) => {
     navigate('/');
   };
 
+
+  const username = sessionStorage.getItem('userName') || 'Guest';
+
   return (
     <DrawerStyled variant="permanent">
       <div>
         <ProfileSection>
           <Avatar alt="Joe Gardner" src="/static/images/avatar/1.jpg" />
-          <Typography variant="h6" style={{ marginLeft: 16 }}>Joe Gardner</Typography>
+          <Typography variant="h6" style={{ marginLeft: 16 }}>{username}</Typography>
         </ProfileSection>
         <DrawerHeader>
           <IconButton>

@@ -64,6 +64,23 @@ export function TaskProvider({ children }) {
         }
     };
 
+    const changeStatusTask = async (taskId, status) => {
+        try {
+            const token = getAuthToken(); // Ensure this function retrieves the correct auth token
+            const response = await axios.put(`${apiUrl}/change-status/${taskId}`, { status }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
+            setTasks((prevTasks) =>
+                prevTasks.map((task) => (task.id === taskId ? response.data.data : task))
+            );
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
+    };
+
     const deleteTask = async (taskId) => {
         try {
             const token = getAuthToken();
@@ -97,7 +114,7 @@ export function TaskProvider({ children }) {
     }, []);
 
     return (
-        <TaskContext.Provider value={{ tasks, createTask, updateTask, deleteTask, getTaskById, selectedTask }}>
+        <TaskContext.Provider value={{ tasks, createTask, updateTask,changeStatusTask, deleteTask, getTaskById, selectedTask }}>
             {children}
         </TaskContext.Provider>
     );

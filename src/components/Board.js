@@ -1,37 +1,37 @@
-import React, { useEffect } from 'react';
-import { Container, Grid, Paper, Typography, Box, Button, Chip } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Container, Grid, Paper, Typography, Box, Button, Chip, IconButton } from '@mui/material';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useTaskContext } from '../context/TaskContext'; // Adjust the path as necessary
+import { useTaskContext } from '../context/TaskContext';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import SortIcon from '@mui/icons-material/Sort'; // Import the sort icon
+import SortIcon from '@mui/icons-material/Sort';
+import EditIcon from '@mui/icons-material/Edit';
 
-const Board = () => {
-    const { tasks, createTask, updateTask, deleteTask } = useTaskContext();
+// Static column definitions
+const initialColumns = {
+    'column-1': { id: 'column-1', title: 'To Do', taskIds: [] },
+    'column-2': { id: 'column-2', title: 'In Progress', taskIds: [] },
+    'column-3': { id: 'column-3', title: 'Under Review', taskIds: [] },
+    'column-4': { id: 'column-4', title: 'Finished', taskIds: [] },
+};
 
-    // Define initial columns state
-    const [columns, setColumns] = React.useState({
-        'column-1': { id: 'column-1', title: 'To do', taskIds: [] },
-        'column-2': { id: 'column-2', title: 'In progress', taskIds: [] },
-        'column-3': { id: 'column-3', title: 'Under review', taskIds: [] },
-        'column-4': { id: 'column-4', title: 'Finished', taskIds: [] },
-    });
+const columnOrder = ['column-1', 'column-2', 'column-3', 'column-4'];
 
-    const columnOrder = ['column-1', 'column-2', 'column-3', 'column-4'];
+const Board = ({ onOpenCreateTask }) => {
+    const { tasks, changeStatusTask } = useTaskContext();
+    const [columns, setColumns] = useState(initialColumns);
 
     useEffect(() => {
-        // Map tasks to columns
-        const newColumns = { ...columns };
+        const updatedColumns = { ...columns };
         tasks.forEach(task => {
             const columnId = getColumnIdByStatus(task.status);
-            if (columnId && newColumns[columnId]) {
-                if (!newColumns[columnId].taskIds.includes(task._id)) {
-                    newColumns[columnId].taskIds.push(task._id);
+            if (columnId && updatedColumns[columnId]) {
+                if (!updatedColumns[columnId].taskIds.includes(task._id)) {
+                    updatedColumns[columnId].taskIds.push(task._id);
                 }
             }
         });
-        setColumns(newColumns);
+        setColumns(updatedColumns);
     }, [tasks]);
 
     const getColumnIdByStatus = (status) => {
@@ -40,9 +40,9 @@ const Board = () => {
                 return 'column-1';
             case 'In Progress':
                 return 'column-2';
-            case 'Under review':
+            case 'Under Review':
                 return 'column-3';
-            case 'Finished':
+            case 'Done':
                 return 'column-4';
             default:
                 return null;
@@ -67,7 +67,7 @@ const Board = () => {
             newTaskIds.splice(destination.index, 0, draggableId);
 
             const newColumn = { ...start, taskIds: newTaskIds };
-            setColumns((prev) => ({ ...prev, [newColumn.id]: newColumn }));
+            setColumns(prev => ({ ...prev, [newColumn.id]: newColumn }));
         } else {
             const startTaskIds = Array.from(start.taskIds);
             startTaskIds.splice(source.index, 1);
@@ -77,12 +77,12 @@ const Board = () => {
             finishTaskIds.splice(destination.index, 0, draggableId);
             const newFinish = { ...finish, taskIds: finishTaskIds };
 
-            setColumns((prev) => ({ ...prev, [newStart.id]: newStart, [newFinish.id]: newFinish }));
+            setColumns(prev => ({ ...prev, [newStart.id]: newStart, [newFinish.id]: newFinish }));
 
-            // Update task status in backend (optional)
+            // Update task status in backend
             const task = tasks.find(t => t._id === draggableId);
             if (task) {
-                await updateTask(draggableId, { ...task, status: finish.title });
+                await changeStatusTask(draggableId, finish.title); // Pass new status here
             }
         }
     };
@@ -96,7 +96,7 @@ const Board = () => {
                         const columnTasks = column.taskIds.map(taskId => tasks.find(task => task._id === taskId));
 
                         return (
-                            <Column key={column.id} column={column} tasks={columnTasks} />
+                            <Column key={column.id} column={column} tasks={columnTasks} onOpenCreateTask={onOpenCreateTask} />
                         );
                     })}
                 </Grid>
@@ -105,7 +105,7 @@ const Board = () => {
     );
 };
 
-const Column = ({ column, tasks }) => {
+const Column = ({ column, tasks, onOpenCreateTask }) => {
     return (
         <Grid item xs={12} sm={6} md={3} sx={{ backgroundColor: '#fff', boxShadow: 'none' }}>
             <Paper sx={{ padding: 1, boxShadow: 'none' }}>
@@ -118,7 +118,7 @@ const Column = ({ column, tasks }) => {
                         <SortIcon sx={{ color: 'primary.main' }} />
                     </Box>
                 </Typography>
-                <Droppable droppableId={column.id}>
+                <Droppable >
                     {provided => (
                         <Box
                             {...provided.droppableProps}
@@ -129,7 +129,7 @@ const Column = ({ column, tasks }) => {
                                 <Task key={task._id} task={task} index={index} />
                             ))}
                             {provided.placeholder}
-                            <Button variant="outlined" fullWidth sx={{ mt: 1 }}>
+                            <Button variant="outlined" fullWidth sx={{ mt: 1 }} onClick={() => onOpenCreateTask(column.title)}>
                                 Add new
                             </Button>
                         </Box>
@@ -164,33 +164,36 @@ const Task = ({ task, index }) => {
     const priorityColor = priorityColors[task.priority] || 'default';
 
     return (
-        <Draggable  index={index} sx={{ boxShadow: 'none' }}>
+        <Draggable index={index}>
             {provided => (
                 <Paper
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    sx={{ padding: 2, marginBottom: 2, borderRadius: 2, backgroundColor: '#F9F9F9' }}
+                    sx={{
+                        padding: 2,
+                        marginBottom: 2,
+                        borderRadius: 2,
+                        backgroundColor: '#F9F9F9',
+                        cursor: 'grab'
+                    }}
                 >
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                        {task.title}
-                    </Typography>
-                    {/* <Typography variant="body2">{task.description}</Typography> */}
-                    {/* <Typography variant="caption" sx={{ display: 'block', marginTop: 1, fontWeight: 'bold' }}>
-                        {task.priority}
-                    </Typography> */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                            {task.title}
+                        </Typography>
+                    </Box>
                     <Chip
                         label={task.priority}
                         color={priorityColor}
                         sx={{ fontWeight: 'bold', marginRight: 1 }}
                     />
                     <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
-                        <AccessTimeIcon sx={{ marginRight: 0.5 }} /> {/* Clock icon */}
+                        <AccessTimeIcon sx={{ marginRight: 0.5 }} />
                         <Typography variant="caption">
                             {task.deadline}
                         </Typography>
                     </Box>
-
                     <Typography variant="caption" sx={{ display: 'block', marginTop: 1 }}>
                         {timeAgo(task.createdAt)}
                     </Typography>
